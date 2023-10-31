@@ -20,7 +20,7 @@ for netIdx = 1:length(NetworkList)
         
         reconFolderInfo = dir(reconFullPath);
         disp(reconFullPath);
-        
+              
         scoreTable = table('Size', [1, 5], ...
             'VariableTypes', ["string", "double", "double", "double", "double"], ...
             'VariableNames',["Name", "PU21-PSNR", "PU21-PIQE", "PU21-FSIM", "PU21-FSIM-CRF"]);

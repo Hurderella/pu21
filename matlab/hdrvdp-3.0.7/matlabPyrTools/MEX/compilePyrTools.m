@@ -13,3 +13,4 @@ mex histo.c
 %mex innerProd.c
 mex pointOp.c
 mex range2.c
+mex gaussian_columns.c

@@ -31,6 +31,7 @@ for kk=1:length(I_tmo)
     % Find the angular resolution in pixels per visual degree:
     % 30" 4K monitor seen from 0.5 meters
     ppd = hdrvdp_pix_per_deg( 30, [3840 2160], 0.5 ); 
+    % ppd = hdrvdp_pix_per_deg( 14, [3840 2160], 0.4 ); 
     
     % Convert from gamma corrected pixel values stored in SDR images 
     % to linear colorimetric values shown on a display with the peak

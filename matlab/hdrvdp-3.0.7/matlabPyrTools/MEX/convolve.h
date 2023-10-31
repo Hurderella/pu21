@@ -13,7 +13,7 @@
 
 #include <stdio.h>
 #include <stdlib.h> 
-
+#include <string.h>
 #define ABS(x)	  (((x)>=0) ? (x) : (-(x)))
 #define ROOT2 1.4142135623730951
 #define REDUCE 0

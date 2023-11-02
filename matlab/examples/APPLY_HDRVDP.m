@@ -6,10 +6,10 @@ reconDir = "G:\\내 드라이브\\Colab Notebooks\\HDR_DATASET\\CaveatsOfQA\\rec
 % reconDir = "C:\\Users\\chan\\Documents\\HDR_DATASET\\CaveatsOfQA\\sihdr\\reconstructions\\";
                    
 ext = ".hdr";
+% ext = ".exr";
 refExt = ".exr";
 % referenceFile = referenceDir + "/" + fileName;
 % reconFile = reconDir + "/" + fileName;
-
 
 % NetworkList = ["singlehdr", "maskhdr", "hdrgan", "hdrcnn", "expandnet"]; %, "drtmo"];
 NetworkList = ["LFNet"];
@@ -39,7 +39,7 @@ for netIdx = 1:length(NetworkList)
             reconFile = hdrread(reconFilePath);
             referFile = exrread(referenceFilePath);
 
-            Lpeak = 1000;
+            Lpeak = 10;
             contrast = 1000000;
             
             gamma = 2.2;
@@ -57,7 +57,7 @@ for netIdx = 1:length(NetworkList)
             scoreTable(idx, :) = curScore;
             % break;
         end
-        writetable(scoreTable, NetworkList(netIdx) + "_" + ClipItem(clipIdx) + "_hdrvdp.xls");
+        writetable(scoreTable, NetworkList(netIdx) + "_" + ClipItem(clipIdx) + "_hdrvdp_peak_10.xls");
         % break;
     end
     % break;

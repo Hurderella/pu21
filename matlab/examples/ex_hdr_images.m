@@ -5,7 +5,7 @@ if ~exist( 'pu21_encoder', 'class' )
 end
 
 I_ref = hdrread( 'nancy_church.hdr' );
-
+disp(max(I_ref(:)))
 L_peak = 4000; % Peak luminance of an HDR display
 
 % HDR images are often given in relative photometric units. They MUST be

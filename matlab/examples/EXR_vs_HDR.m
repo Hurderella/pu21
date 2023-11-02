@@ -1,9 +1,10 @@
-% referDir = "G:\\내 드라이브\\Colab Notebooks\\HDR_DATASET\\CaveatsOfQA\\reference\\";
-% reconDir = "G:\\내 드라이브\\Colab Notebooks\\HDR_DATASET\\CaveatsOfQA\\reconstructions\\";
+referDir = "G:\\내 드라이브\\Colab Notebooks\\HDR_DATASET\\CaveatsOfQA\\reference\\";
+reconDir = "G:\\내 드라이브\\Colab Notebooks\\HDR_DATASET\\CaveatsOfQA\\reconstructions\\";
+pathSplit = "\\";
 
-referDir = "/Users/chan_company/Documents/github/pu21/drive_refer/";
-reconDir = "/Users/chan_company/Documents/github/pu21/drive_recon/";
-pathSplit = "/";
+% referDir = "/Users/chan_company/Documents/github/pu21/drive_refer/";
+% reconDir = "/Users/chan_company/Documents/github/pu21/drive_recon/";
+% pathSplit = "/";
 
 networkName_LFNet = "LFNet";
 networkName_single = "singlehdr";
@@ -41,68 +42,62 @@ disp(max(referFile(:)));
 pu21 = pu21_encoder();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-reconFile = lfnetFile;
-adjReconFile = reconFile / max(reconFile(:));
-exrwrite(adjReconFile, "std_0_1_recon_LF.exr");
-% 
-peakApplyRecon = adjReconFile * 10;
-exrwrite(peakApplyRecon, "peak_a_recon_10_LF.exr");
+
+adjLFReconFile = lfnetFile / max(lfnetFile(:));
+peakApplyLFRecon = adjLFReconFile * 10;
+exrwrite(peakApplyLFRecon, "peak_a_recon_10_LF.exr");
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% adjReferFile = (referFile) / (max(referFile(:)));
-% adjReferFile =
+adjSingleReconFile = singleHdrFile / max(singleHdrFile(:));
+peakApplySingleRecon = adjSingleReconFile * 10;
+exrwrite(peakApplySingleRecon, "peak_a_recon_10_Sing.exr");
 
-% exrwrite(adjReferFile, "std_0_1_refer.exr");
-% hdrwrite(adjReferFile, "std_0_1_refer.hdr");
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-peakApplyRefer = adjReferFile * 1000 / 100;
-exrwrite(peakApplyRefer, "peak_a_refer_150.exr");
-% hdrwrite(peakApplyRefer, "peak_a_refer.hdr");
+adjReferFile = (referFile) / (max(referFile(:)));
+peakApplyRefer = adjReferFile * 10;
+exrwrite(peakApplyRefer, "peak_a_refer_10.exr");
 
-tm_refer = tonemap(adjReferFile);
-tm_recon = tonemap(adjReconFile);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-tm_psnr = psnr(tm_recon, tm_refer, 255);
+% tm_refer = tonemap(adjReferFile);
+% tm_LF_recon = tonemap(adjLFReconFile);
+% tm_Sing_recon = tonemap(adjSingleReconFile);
+
+tm_refer = tonemap(peakApplyRefer);
+tm_LF_recon = tonemap(peakApplyLFRecon);
+tm_Sing_recon = tonemap(peakApplySingleRecon);
+
+tm_psnr = psnr(tm_LF_recon, tm_refer, 255);
 disp(tm_psnr);
 
-% peakApplyRefer_2 = adjReferFile * 2;
-% exrwrite(peakApplyRefer_2, "peak_b_refer.exr");
-% % hdrwrite(peakApplyRefer_2, "peak_b_refer.hdr");
-% 
-% peakApplyRefer_3 = adjReferFile ;
-% exrwrite(peakApplyRefer_3, "peak_c_refer.exr");
-% 
-% peakApplyRefer_4 = adjReferFile * 1000;
-% pu21_referFile = pu21.encode(peakApplyRefer);
-% pu21_referFile = pu21_referFile / 1500 * 15;
-% exrwrite(pu21_referFile, "pu21_refer.exr");
+tm_psnr = psnr(tm_Sing_recon, tm_refer, 255);
+disp(tm_psnr);
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% hdrwrite(pu21_referFile, "pu21_refer.hdr");
+Lpeak = 10;
+adjLFReconFile = adjLFReconFile * Lpeak;
+adjSingleReconFile = adjSingleReconFile * Lpeak;
+adjReferFile = adjReferFile * Lpeak;
 
-% tonemappedRefer = tonemap(peakApplyRefer_2);
-% exrwrite(tonemappedRefer, "tonemap.exr");
-% hdrwrite(tonemappedRefer, "tonemap.hdr");
+pu21_lf = pu21_metric(adjLFReconFile, adjReferFile, 'PSNR');
+pu21_sing = pu21_metric(adjSingleReconFile, adjReferFile, 'PSNR');
 
-% reconFile = hdrread(singleHdr_HDR_FilePath);
-% referFile = exrread(refer_EXR_FilePath);
-% 
-% Lpeak = 1000;
-% contrast = 1000000;
-% 
-% gamma = 2.2;
-% E_ambient = 100;
-% ppd = hdrvdp_pix_per_deg( 24, [3840 2160], 0.8 ); 
-% 
-% reconFile = reconFile / max(reconFile(:));
-% referFile = referFile / max(referFile(:));
-% 
-% L_recon = hdrvdp_gog_display_model(reconFile, Lpeak, contrast, gamma, E_ambient);
-% L_refer = hdrvdp_gog_display_model(referFile, Lpeak, contrast, gamma, E_ambient);
-% 
-% ret = hdrvdp3('quality', L_recon, L_refer, 'rgb-native', ppd);
-% disp(ret.Q);
-            
+pu21_LF_enc = pu21.encode(adjLFReconFile);
+pu21_S_enc = pu21.encode(adjSingleReconFile);
 
+disp(piqe(pu21_LF_enc));
+disp(piqe(pu21_S_enc));
+
+disp(pu21_lf);
+disp(pu21_sing);
+
+disp(piqe(tm_LF_recon));
+disp(piqe(tm_Sing_recon));
+disp("===")
+% pu21_psnr = pu21_metric(reconFile, referenceFile, 'PSNR');
+% pu21_fsim = pu21_metric(reconFile, referenceFile, 'FSIM');
+% pu21_fsim_crf = pu21_metric(reconFile, referenceFile, 'FSIM', 'crf_correction', true);
 

@@ -6,14 +6,20 @@ clipDelim = ""; % "clip_97\\";
 
 refExt = ".exr";
 
-NetworkList = ["LFNet", "singlehdr", "maskhdr", "hdrgan", "hdrcnn", "expandnet", "drtmo"];
-ClipItem = ["clip_95", "clip_97"];
+NetworkList = ["LightweightAgent_mn_impl_mean32_score15_clip0109_simsiam_complete"]; %["LFNet", "singlehdr", "maskhdr", "hdrgan", "hdrcnn", "expandnet", "drtmo"];
+ClipItem = ["clip97"]; %["clip_95", "clip_97"];
 
 for netIdx = 1:length(NetworkList)
     for clipIdx = 1:length(ClipItem)
+        hdrFileFlag = false;
         ext = ".exr";
         if NetworkList(netIdx) == "LFNet"
             ext = ".hdr";
+            hdrFileFlag = true;
+        end
+        if NetworkList(netIdx) == "LightweightAgent_mn_impl_mean32_score15_clip0109_simsiam_complete"
+            ext = ".hdr";
+            hdrFileFlag = true;
         end
 
         reconPath = reconPrefixPath + NetworkList(netIdx) + "\\";
@@ -33,7 +39,11 @@ for netIdx = 1:length(NetworkList)
             reconFileName = reconFolderInfo(idx).name;
             reconFilePath = hdrBasePath + reconPath + clipDelim + reconFileName;
             
-            referenceFileName = extractBefore(reconFileName, ext) + refExt;
+            %referenceFileName = extractBefore(reconFileName, ext) + refExt;
+            fileName = split(reconFilePath, ["_", "."]);
+            tokenLen = size(fileName, 1);
+         
+            referenceFileName =  fileName(tokenLen - 1)+ refExt;
             referenceFilePath = hdrBasePath + referencePath + referenceFileName;
             
             pu21 = pu21_encoder();
@@ -44,7 +54,7 @@ for netIdx = 1:length(NetworkList)
             fprintf("%s\n", referenceFilePath);
         
             
-            if NetworkList(netIdx) == "LFNet"
+            if hdrFileFlag %NetworkList(netIdx) == "LFNet"
                 reconFile = hdrread(reconFilePath);
             else
                 reconFile = exrread(reconFilePath);

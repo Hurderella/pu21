@@ -1,10 +1,16 @@
 
 % referenceDir = "/Users/chan/Library/CloudStorage/GoogleDrive-hcs3759@gmail.com/내\ 드라이브/Colab\ Notebooks/HDR_DATASET/CaveatsOfQA/reference";
 % reconDir = "/Users/chan/Library/CloudStorage/GoogleDrive-hcs3759@gmail.com/내\ 드라이브/Colab\ Notebooks/HDR_DATASET/CaveatsOfQA/reconstructions/singlehdr/clip_97";
-referenceDir = "G:\\내 드라이브\\Colab Notebooks\\HDR_DATASET\\CaveatsOfQA\\reference\\";
-reconDir = "G:\\내 드라이브\\Colab Notebooks\\HDR_DATASET\\CaveatsOfQA\\reconstructions\\";
+% referenceDir = "G:\\내 드라이브\\Colab Notebooks\\HDR_DATASET\\CaveatsOfQA\\reference\\";
+% reconDir = "G:\\내 드라이브\\Colab Notebooks\\HDR_DATASET\\CaveatsOfQA\\reconstructions\\";
 % reconDir = "C:\\Users\\chan\\Documents\\HDR_DATASET\\CaveatsOfQA\\sihdr\\reconstructions\\";
-                   
+hdrBasePath = "C:\\Users\\chan\\Documents\\HDR_DATASET\\CaveatsOfQA\\sihdr\\";
+reconPrefixPath = "reconstructions\\"; % + NetworkList % LFNet\\;
+referencePath = "reference\\";
+clipDelim = ""; 
+reconDir = "C:\\Users\\chan\\Documents\\HDR_DATASET\\CaveatsOfQA\\sihdr\\reconstructions\\";
+referenceDir = "C:\\Users\\chan\\Documents\\HDR_DATASET\\CaveatsOfQA\\sihdr\\reference\\";
+
 ext = ".hdr";
 % ext = ".exr";
 refExt = ".exr";
@@ -12,8 +18,24 @@ refExt = ".exr";
 % reconFile = reconDir + "/" + fileName;
 
 % NetworkList = ["singlehdr", "maskhdr", "hdrgan", "hdrcnn", "expandnet"]; %, "drtmo"];
-NetworkList = ["LFNet"];
-ClipItem = ["clip_95", "clip_97"];
+% NetworkList = [ ...
+%     "LightweightAgent_mn_impl_rwd-score2-clip90", ...
+%     "LightweightAgent_mn_impl_rwd-20_10epoch_add_epoch", ...
+%     "LightweightAgent_mn_impl_rwd-20-10epoch_Gaussian", ...
+%     "LightweightAgent_mn_impl_rwd-20_10epoch_apply_mean_31_pooling", ...
+%     "LightweightAgent_mn_impl_rwd-20_10epoch_apply_mean_11_pooling", ...
+%     "LightweightAgent_mn_impl_rwd-20_10epoch_apply_mean_5_pooling", ...
+%     "LightweightAgent_mn_impl_rwd-20_10epoch_apply_mean_pooling", ...
+%     "LightweightAgent_mn_impl_rwd-20_10epoch", ...
+%     "LightweightAgent_mn_impl_rwd-score2", ...
+%     "LightweightAgent_mn_impl_rwd-20", ...
+%     "LightweightAgent_mn_impl_9epoch_900", ...
+%     "LightweightAgent_mn_impl_haverange", ...
+%     "LightweightAgent_sim_lr001", ...
+%     "LightwieghtAgent_mn_impl_1proc"]; 
+%["LFNet"];
+NetworkList =["LightweightAgent_mn_impl_mean32_score15_clip0109_simsiam_complete"];
+ClipItem = ["clip97"];
 
 for netIdx = 1:length(NetworkList)
     for clipIdx = 1:length(ClipItem)
@@ -32,9 +54,12 @@ for netIdx = 1:length(NetworkList)
             reconFilePath = reconDir + NetworkList(netIdx) + "\\" + clipDelim + reconFileName;
             disp(reconFilePath)
 
-            referenceFileName = extractBefore(reconFileName, ext);
-            referenceFilePath = referenceDir + referenceFileName + refExt;
-
+            fileName = split(reconFilePath, ["_", "."]);
+            tokenLen = size(fileName, 1);
+         
+            referenceFileName =  fileName(tokenLen - 1)+ refExt;
+            referenceFilePath = hdrBasePath + referencePath + referenceFileName;
+       
             % reconFile = exrread(reconFilePath);
             reconFile = hdrread(reconFilePath);
             referFile = exrread(referenceFilePath);

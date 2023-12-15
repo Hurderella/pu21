@@ -61,7 +61,7 @@ for netIdx = 1:length(NetworkList)
             referenceFileName =  fileName(tokenLen - 1)+ refExt;
             referenceFilePath = hdrBasePath + referencePath + referenceFileName;
        
-            if isemember(NetworkList(netIdx), ExrFiles)
+            if ismember(NetworkList(netIdx), ExrFiles)
                 reconFile = exrread(reconFilePath);
             else
                 reconFile = hdrread(reconFilePath);

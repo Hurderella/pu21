@@ -9,31 +9,26 @@ clipDelim = "";
 
 refExt = ".exr";
 
-
-NetworkList = ["LightweightAgent_default_22070522", "LFNet", "singlehdr", "maskhdr", "hdrgan", "hdrcnn", "expandnet"];
-ClipItem = ["clip97"]; %["clip_95", "clip_97"];
+NetworkList = ["LFNet", "singlehdr", "maskhdr", "hdrgan", "hdrcnn", "expandnet"];
+ExrFiles = ["singlehdr", "maskhdr", "hdrgan", "hdrcnn", "expandnet"];
+ClipItem = ["clip_97"]; %["clip_95", "clip_97"];
 
 for netIdx = 1:length(NetworkList)
     for clipIdx = 1:length(ClipItem)
-        hdrFileFlag = false;
-        ext = ".exr";
-        if NetworkList(netIdx) == "LFNet"
-            ext = ".hdr";
-            hdrFileFlag = true;
-        end
-        if NetworkList(netIdx) == "LightweightAgent_default_22070522"
-            ext = ".hdr";
-            hdrFileFlag = true;
+        ext = ".hdr";
+        hdrFileFlag = true;
+        if ismember(NetworkList(netIdx), ExrFiles)
+            ext = ".exr";
+            hdrFileFlag = false;
         end
 
-        reconPath = reconPrefixPath + NetworkList(netIdx) + "\\";
-        clipDelim = ClipItem(clipIdx) + "\\";
+        reconPath = reconPrefixPath + NetworkList(netIdx) + filesep;
+        clipDelim = ClipItem(clipIdx) + filesep;
 
-        reconFullPath = hdrBasePath + reconPath + clipDelim + "*" + ext;
-        referenceFullPath = hdrBasePath + referencePath;
+        reconDirPath = hdrBasePath + reconPath + clipDelim + "*" + ext;
         
-        reconFolderInfo = dir(reconFullPath);
-        disp(reconFullPath);
+        reconFolderInfo = dir(reconDirPath);
+        disp(reconDirPath);
               
         scoreTable = table('Size', [1, 5], ...
             'VariableTypes', ["string", "double", "double", "double", "double"], ...
@@ -41,10 +36,10 @@ for netIdx = 1:length(NetworkList)
         for idx = 1:length(reconFolderInfo)
             
             reconFileName = reconFolderInfo(idx).name;
-            reconFilePath = hdrBasePath + reconPath + clipDelim + reconFileName;
-            
+            reconFilePath = string(reconFolderInfo(idx).folder) + filesep + reconFileName;
+
             %referenceFileName = extractBefore(reconFileName, ext) + refExt;
-            fileName = split(reconFilePath, ["_", "."]);
+            fileName = split(reconFileName, ["_", "."]);
             tokenLen = size(fileName, 1);
          
             referenceFileName =  fileName(tokenLen - 1)+ refExt;

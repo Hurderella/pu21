@@ -34,7 +34,8 @@ refExt = ".exr";
 %     "LightweightAgent_sim_lr001", ...
 %     "LightwieghtAgent_mn_impl_1proc"]; 
 %["LFNet"];
-NetworkList =["LightweightAgent_mn_impl_mean32_score15_clip0109_simsiam_complete"];
+NetworkList = ["LightweightAgent_default_22070522", "LFNet", "singlehdr", "maskhdr", "hdrgan", "hdrcnn", "expandnet"];
+ExrFiles = ["singlehdr", "maskhdr", "hdrgan", "hdrcnn", "expandnet"];
 ClipItem = ["clip97"];
 
 for netIdx = 1:length(NetworkList)
@@ -60,11 +61,15 @@ for netIdx = 1:length(NetworkList)
             referenceFileName =  fileName(tokenLen - 1)+ refExt;
             referenceFilePath = hdrBasePath + referencePath + referenceFileName;
        
-            % reconFile = exrread(reconFilePath);
-            reconFile = hdrread(reconFilePath);
+            if isemember(NetworkList(netIdx), ExrFiles)
+                reconFile = exrread(reconFilePath);
+            else
+                reconFile = hdrread(reconFilePath);
+            end
+
             referFile = exrread(referenceFilePath);
 
-            Lpeak = 10;
+            Lpeak = 5;
             contrast = 1000000;
             
             gamma = 2.2;
@@ -82,7 +87,7 @@ for netIdx = 1:length(NetworkList)
             scoreTable(idx, :) = curScore;
             % break;
         end
-        writetable(scoreTable, NetworkList(netIdx) + "_" + ClipItem(clipIdx) + "_hdrvdp_peak_10.xls");
+        writetable(scoreTable, NetworkList(netIdx) + "_Lpeak_5_" + "_hdrvdp_peak_10.xls");
         % break;
     end
     % break;

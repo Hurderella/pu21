@@ -9,7 +9,7 @@ clipDelim = "";
 
 refExt = ".exr";
 
-NetworkList = ["LFNet", "singlehdr", "maskhdr", "hdrgan", "hdrcnn", "expandnet"];
+NetworkList = ["LFNet"] %["LFNet", "singlehdr", "maskhdr", "hdrgan", "hdrcnn", "expandnet"];
 ExrFiles = ["singlehdr", "maskhdr", "hdrgan", "hdrcnn", "expandnet"];
 ClipItem = ["clip_97"]; %["clip_95", "clip_97"];
 
@@ -30,9 +30,9 @@ for netIdx = 1:length(NetworkList)
         reconFolderInfo = dir(reconDirPath);
         disp(reconDirPath);
               
-        scoreTable = table('Size', [1, 5], ...
-            'VariableTypes', ["string", "double", "double", "double", "double"], ...
-            'VariableNames',["Name", "PU21-PSNR", "TMO-PSNR", "REF-TMO-PIQE", "REC-TMO-PIQE"]);
+        scoreTable = table('Size', [1, 10], ...
+            'VariableTypes', ["string", "double", "double", "double", "double", "double", "double", "double", "double", "double"], ...
+            'VariableNames',["Name", "PU21-PSNR", "TMO-PSNR", "REF-TMO-PIQE", "REC-TMO-PIQE", "REF-PU21-PIQE", "REC-PU21-PIQE", "REF-PU21-BRISQUE", "REC-PU21-BRISQUE", "HDR-VDP-3"]);
         for idx = 1:length(reconFolderInfo)
             
             reconFileName = reconFolderInfo(idx).name;
@@ -74,11 +74,60 @@ for netIdx = 1:length(NetworkList)
             tm_recon_piqe = piqe(tm_reconFile);
             tm_refer_piqe = piqe(tm_referenceFile);
             
+            reconFile_pu21 = pu21.encode( reconFile );
+            referFile_pu21 = pu21.encode( referenceFile );
+            
+            pu21_recon_piqe = piqe(reconFile_pu21);
+            pu21_refer_piqe = piqe(referFile_pu21);
+            
+            pu21_recon_brisque = brisque (reconFile_pu21);
+            pu21_refer_brisque = brisque(referFile_pu21);
+
             % pu21_metric
             pu21_psnr = pu21_metric(reconFile, referenceFile, 'PSNR');
             
-            fprintf("PU21-PSNR : %g, TMO-PSNR : %g, REF-TMO-PIQE : %g, REC-TMO-PIQE : %g\n", ...
-                pu21_psnr, tone_psnr, tm_refer_piqe, tm_recon_piqe);
+            %%%%%%%%%% HDR VDP 3 %%%%%%%%%%%
+            if hdrFileFlag 
+                reconFile = hdrread(reconFilePath);
+            else
+                reconFile = exrread(reconFilePath);
+            end
+            
+            referenceFile = exrread(referenceFilePath);
+            
+            contrast = 1000000;
+            
+            gamma = 2.2;
+            E_ambient = 100;
+            ppd = hdrvdp_pix_per_deg( 24, [3840 2160], 0.8 ); 
+
+            reconFile = reconFile / max(reconFile(:));
+            referFile = referFile / max(referFile(:));
+
+            L_recon = hdrvdp_gog_display_model(reconFile, Lpeak, contrast, gamma, E_ambient);
+            L_refer = hdrvdp_gog_display_model(referFile, Lpeak, contrast, gamma, E_ambient);
+            
+            ret = hdrvdp3('quality', L_recon, L_refer, 'rgb-native', ppd);
+            
+            %%%%%%%%%%%%%%%%%%%%%
+
+            if isnan(pu21_refer_brisque)
+                pu21_refer_brisque = 100.0;
+            end
+            if isnan(pu21_recon_brisque)
+                pu21_recon_brisque = 100.0;
+            end
+            if isnan(pu21_refer_piqe)
+                pu21_refer_piqe = 100.0;
+            end
+            if isnan(pu21_recon_piqe)
+                pu21_recon_piqe = 100.0;
+            end
+            fprintf("PU21-PSNR : %g, TMO-PSNR : %g, REF-TMO-PIQE : %g, REC-TMO-PIQE : %g, ... " + ...
+                "REF-PU21-PIQE : %g, REC-PU21-PIQE : %g, REF-PU21-BRISQUE : %g, REC-PU21-BRISQUE : %g, HDRVDP-3 : %g\n", ...
+                pu21_psnr, tone_psnr, tm_refer_piqe, tm_recon_piqe, ...
+                pu21_refer_piqe, pu21_recon_piqe, pu21_refer_brisque, pu21_recon_brisque, ...
+                ret.Q);
             
             % Lpeak = 1000;
             % reconFile = reconFile / max(reconFile(:)) * Lpeak;
@@ -92,10 +141,11 @@ for netIdx = 1:length(NetworkList)
             %     pu21_psnr, pu21_fsim, pu21_fsim_crf);
             % fprintf("pu21 piqe recon : %g\n", reconPiqeScore);
         
-            curScore = {reconFileName, pu21_psnr, tone_psnr, tm_refer_piqe, tm_recon_piqe};
+            curScore = {reconFileName, pu21_psnr, tone_psnr, tm_refer_piqe, tm_recon_piqe, ...
+                pu21_refer_piqe, pu21_recon_piqe, pu21_refer_brisque, pu21_recon_brisque, ret.Q};
             scoreTable(idx, :) = curScore;
         end
-        writetable(scoreTable, NetworkList(netIdx) + "_Lpeak_5" + "_peak10___" + ".xls");
+        writetable(scoreTable, NetworkList(netIdx) + "_Lpeak_5" + "_TOTAL_" + ".xls");
     end
 end
 

@@ -6,7 +6,7 @@ clipDelim = ""; % "clip_97\\";
 
 refExt = ".exr";
 
-NetworkList = ["LightweightAgent_mn_impl_mean32_score15_clip0109_simsiam_complete"]; %["LFNet", "singlehdr", "maskhdr", "hdrgan", "hdrcnn", "expandnet", "drtmo"];
+NetworkList = ["LightweightAgent_default_22070522", "LFNet", "singlehdr", "maskhdr", "hdrgan", "hdrcnn", "expandnet"];
 ClipItem = ["clip97"]; %["clip_95", "clip_97"];
 
 for netIdx = 1:length(NetworkList)
@@ -17,7 +17,7 @@ for netIdx = 1:length(NetworkList)
             ext = ".hdr";
             hdrFileFlag = true;
         end
-        if NetworkList(netIdx) == "LightweightAgent_mn_impl_mean32_score15_clip0109_simsiam_complete"
+        if NetworkList(netIdx) == "LightweightAgent_default_22070522"
             ext = ".hdr";
             hdrFileFlag = true;
         end
@@ -62,7 +62,7 @@ for netIdx = 1:length(NetworkList)
             
             referenceFile = exrread(referenceFilePath);
             
-            Lpeak = 10;
+            Lpeak = 5;
             reconFile = reconFile / max(reconFile(:)) * Lpeak;
             referenceFile = referenceFile / max(referenceFile(:)) * Lpeak;
 
@@ -96,7 +96,7 @@ for netIdx = 1:length(NetworkList)
             curScore = {reconFileName, pu21_psnr, tone_psnr, tm_refer_piqe, tm_recon_piqe};
             scoreTable(idx, :) = curScore;
         end
-        writetable(scoreTable, NetworkList(netIdx) + "_" + ClipItem(clipIdx) + "_peak10___" + ".xls");
+        writetable(scoreTable, NetworkList(netIdx) + "_Lpeak_5" + "_peak10___" + ".xls");
     end
 end
 

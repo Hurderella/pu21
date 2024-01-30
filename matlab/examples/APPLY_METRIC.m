@@ -2,16 +2,19 @@
 % reconDir = "/Users/chan_company/Documents/CaveatSIhdr/reconstruction/";
 % pathSplit = "/";
 
-hdrBasePath = "/Users/chan_company/Documents/CaveatSIhdr/";
-reconPrefixPath = "reconstructions/"; 
-referencePath = "reference/";
+hdrBasePath = "C:\\Users\\chan\\Documents\\HDR_DATASET\\CaveatsOfQA\\sihdr" + filesep;
+reconPrefixPath = "reconstructions" + filesep; 
+referencePath = "reference" + filesep;
 clipDelim = ""; 
 
 refExt = ".exr";
 
-NetworkList = ["LFNet"] %["LFNet", "singlehdr", "maskhdr", "hdrgan", "hdrcnn", "expandnet"];
+NetworkList = ["TEST_RESULT_2024_01_30__16_50_52_mean_eq"];
+    %"[LightweightAgent_mn_impl_mean32_score15_clip0109_complete", ...
+    %"LightweightAgent_mn_impl_mean32_score15_clip0109_simsiam_complete", ...
+    %"LFNet", "singlehdr", "hdrcnn", "expandnet"];
 ExrFiles = ["singlehdr", "maskhdr", "hdrgan", "hdrcnn", "expandnet"];
-ClipItem = ["clip_97"]; %["clip_95", "clip_97"];
+ClipItem = ["clip97"]; %["clip_95", "clip_97"];
 
 for netIdx = 1:length(NetworkList)
     for clipIdx = 1:length(ClipItem)
@@ -33,7 +36,7 @@ for netIdx = 1:length(NetworkList)
         scoreTable = table('Size', [1, 10], ...
             'VariableTypes', ["string", "double", "double", "double", "double", "double", "double", "double", "double", "double"], ...
             'VariableNames',["Name", "PU21-PSNR", "TMO-PSNR", "REF-TMO-PIQE", "REC-TMO-PIQE", "REF-PU21-PIQE", "REC-PU21-PIQE", "REF-PU21-BRISQUE", "REC-PU21-BRISQUE", "HDR-VDP-3"]);
-        for idx = 1:length(reconFolderInfo)
+        parfor idx = 1:length(reconFolderInfo)
             
             reconFileName = reconFolderInfo(idx).name;
             reconFilePath = string(reconFolderInfo(idx).folder) + filesep + reconFileName;
@@ -93,7 +96,7 @@ for netIdx = 1:length(NetworkList)
                 reconFile = exrread(reconFilePath);
             end
             
-            referenceFile = exrread(referenceFilePath);
+            referFile = exrread(referenceFilePath);
             
             contrast = 1000000;
             

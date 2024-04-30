@@ -3,16 +3,10 @@ function APPLY_METRIC%(input)
     % reconDir = "/Users/chan_company/Documents/CaveatSIhdr/reconstruction/";
     % pathSplit = "/";
     
-    %%%%%%%%%%%% windows %%%%%%%%%%%
     %tableSaveDst = "C:\Users\chan\Documents\github\ICIP\TEST_RESULT\";
     %hdrBasePath = "C:\\Users\\chan\\Documents\\HDR_DATASET\\CaveatsOfQA\\sihdr" + filesep;
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-    %%%%%%%%%%%% Ubuntu %%%%%%%%%%%%
     tableSaveDst = "/home/chan/Documents/github/ICIP/";
     hdrBasePath = "/home/chan/Documents/HDR_DATASET/CaveatsOfQA/sihdr" + filesep;
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
     reconPrefixPath = tableSaveDst;
     referencePath = hdrBasePath + "reference" + filesep;
     
@@ -63,34 +57,64 @@ function APPLY_METRIC%(input)
                 referenceFileName =  fileName(tokenLen - 1)+ refExt;
                 referenceFilePath = referencePath + referenceFileName;
                 
-                
+                pu21 = pu21_encoder();
                 
                 fprintf("%s\n", reconFileName);
                 fprintf("%s\n", reconFilePath);
                 fprintf("<<--->> %s \n", referenceFileName);
                 fprintf("%s\n", referenceFilePath);
-                 
+            
+                
+                if hdrFileFlag %NetworkList(netIdx) == "LFNet"
+                    reconFile = hdrread(reconFilePath);
+                else
+                    reconFile = exrread(reconFilePath);
+                end
+                
+                referenceFile = exrread(referenceFilePath);
+                
                 Lpeak = 500.0;
                
-                % pu21_metric
-                %%%%%%%%%%%%% PSNR %%%%%%%%%%%%%
+                 % pu21_metric
+                
                 pu21_psnr = getPSNR(reconFilePath, referenceFilePath, hdrFileFlag, false, Lpeak);
                 pu21_psnr_y = getPSNR(reconFilePath, referenceFilePath, hdrFileFlag, true, Lpeak);
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                
+                epsilon = 0.005;
+        
 
-                %%%%%%%% BRISQUE & PIQE %%%%%%%%
-                ret = getBRISQUE_PIQE(reconFilePath, referenceFilePath, hdrFileFlag, Lpeak);
-                pu21_recon_piqe = ret(1);
-                pu21_refer_piqe = ret(2);
-                pu21_recon_brisque = ret(3);
-                pu21_refer_brisque = ret(4);
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                % reconFile = reconFile / max(reconFile(:)) * Lpeak + epsilon;
+                % referenceFile = referenceFile / max(referenceFile(:)) * Lpeak + epsilon;
+                % 
+                % reconFile_pu21 = pu21.encode( reconFile) ;
+                % referFile_pu21 = pu21.encode( referenceFile);
+                % 
+                % % Normalize
+                % for k = 1:3
+                % 
+                %     data = reconFile_pu21(:, :, k);
+                %     data = data(:);
+                %     data_max = max(data);
+                %     reconFile_pu21(:, :, k) = reconFile_pu21(:, :, k) / data_max;
+                % 
+                %     data = referFile_pu21(:, :, k);
+                %     data = data(:);
+                %     data_max = max(data);
+                %     referFile_pu21(:, :, k) = referFile_pu21(:, :, k) / data_max;
+                % end
+                % 
+                % pu21_recon_piqe = piqe(reconFile_pu21);
+                % pu21_refer_piqe = piqe(referFile_pu21);
+                % 
+                % pu21_recon_brisque = brisque (reconFile_pu21);
+                % pu21_refer_brisque = brisque(referFile_pu21);
+            
 
                 %%%%%%%%%% HDR VDP 3 %%%%%%%%%%%
                 
                 hdrvdp3val = getHDRVDP3(reconFilePath, referenceFilePath, hdrFileFlag, Lpeak);
                 
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%%%%%%%%%%%%%%%%%%%
     
                 if isnan(pu21_refer_brisque)
                     pu21_refer_brisque = 100.0;
@@ -121,9 +145,7 @@ function APPLY_METRIC%(input)
     end
 end
 
-function ret = getBRISQUE_PIQE(reconFilePath, referenceFilePath, hdrFileFlag, Lpeak)
-    pu21 = pu21_encoder();
-    epsilon = 0.005;
+function ret = getBRISQUE_PIQE(reconFilePath, referenceFilePath, hdrFileFlag)
     if hdrFileFlag %NetworkList(netIdx) == "LFNet"
         reconFile = hdrread(reconFilePath);
     else
@@ -156,7 +178,6 @@ function ret = getBRISQUE_PIQE(reconFilePath, referenceFilePath, hdrFileFlag, Lp
 
     pu21_recon_brisque = brisque (reconFile_pu21);
     pu21_refer_brisque = brisque(referFile_pu21);
-    ret = [pu21_recon_piqe, pu21_refer_piqe, pu21_recon_brisque, pu21_refer_brisque];
 end
 function ret = getPSNR(reconFilePath, referenceFilePath, hdrFileFlag, grayFlag, Lpeak)
     if hdrFileFlag %NetworkList(netIdx) == "LFNet"

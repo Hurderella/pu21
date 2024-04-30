@@ -1,4 +1,4 @@
-function BRISQUE_METRIC
+function BRISQUE_METRIC(a)
     PNG()
     %EXR()
 end

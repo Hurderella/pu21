@@ -1,4 +1,4 @@
-function APPLY_METRIC%(input)
+function APPLY_METRIC(input)
     % referDir = "/Users/chan_company/Documents/CaveatSIhdr/reference/";
     % reconDir = "/Users/chan_company/Documents/CaveatSIhdr/reconstruction/";
     % pathSplit = "/";
@@ -12,16 +12,16 @@ function APPLY_METRIC%(input)
     tableSaveDst = "/home/chan/Documents/github/ICIP/";
     hdrBasePath = "/home/chan/Documents/HDR_DATASET/CaveatsOfQA/sihdr" + filesep;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
+
     reconPrefixPath = tableSaveDst;
     referencePath = hdrBasePath + "reference" + filesep;
     
     refExt = ".exr";
     
     %NetworkList = ["singlehdr", "hdrcnn", "expandnet", "LFNet"];
-    NetworkList = ["TEST_RESULT/TEST_RESULT_2024_04_12__08_33_47_dummy"];
+    %NetworkList = ["TEST_RESULT/TEST_RESULT_2024_04_12__08_33_47_dummy"];
     %NetworkList = ["TEST_RESULT/TEST_RESULT_2024_04_27__14_59_00"];
-    %NetworkList = [string(input)];
+    NetworkList = [string(input)];
     disp(NetworkList);
     disp("check")
         
@@ -62,9 +62,7 @@ function APPLY_METRIC%(input)
              
                 referenceFileName =  fileName(tokenLen - 1)+ refExt;
                 referenceFilePath = referencePath + referenceFileName;
-                
-                
-                
+                                
                 fprintf("%s\n", reconFileName);
                 fprintf("%s\n", reconFilePath);
                 fprintf("<<--->> %s \n", referenceFileName);
@@ -87,9 +85,7 @@ function APPLY_METRIC%(input)
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
                 %%%%%%%%%% HDR VDP 3 %%%%%%%%%%%
-                
                 hdrvdp3val = getHDRVDP3(reconFilePath, referenceFilePath, hdrFileFlag, Lpeak);
-                
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
                 if isnan(pu21_refer_brisque)
@@ -138,24 +134,29 @@ function ret = getBRISQUE_PIQE(reconFilePath, referenceFilePath, hdrFileFlag, Lp
     referFile_pu21 = pu21.encode(referenceFile);
 
     % Normalize
-    for k = 1:3
+    reconFile_pu21 = get_luminance(reconFile_pu21);
+    referFile_pu21 = get_luminance(referFile_pu21);
 
-        data = reconFile_pu21(:, :, k);
-        data = data(:);
-        data_max = max(data);
-        reconFile_pu21(:, :, k) = reconFile_pu21(:, :, k) / data_max;
-
-        data = referFile_pu21(:, :, k);
-        data = data(:);
-        data_max = max(data);
-        referFile_pu21(:, :, k) = referFile_pu21(:, :, k) / data_max;
-    end
+    % Normalize
+    % for k = 1:3
+    %     data = reconFile_pu21(:, :, k);
+    %     data = data(:);
+    %     data_max = max(data);
+    %     reconFile_pu21(:, :, k) = reconFile_pu21(:, :, k) / data_max;
+    % 
+    %     data = referFile_pu21(:, :, k);
+    %     data = data(:);
+    %     data_max = max(data);
+    %     referFile_pu21(:, :, k) = referFile_pu21(:, :, k) / data_max;
+    % end
+  
 
     pu21_recon_piqe = piqe(reconFile_pu21);
     pu21_refer_piqe = piqe(referFile_pu21);
-
-    pu21_recon_brisque = brisque (reconFile_pu21);
+    
+    pu21_recon_brisque = brisque(reconFile_pu21);
     pu21_refer_brisque = brisque(referFile_pu21);
+    
     ret = [pu21_recon_piqe, pu21_refer_piqe, pu21_recon_brisque, pu21_refer_brisque];
 end
 function ret = getPSNR(reconFilePath, referenceFilePath, hdrFileFlag, grayFlag, Lpeak)
@@ -179,6 +180,7 @@ function ret = getPSNR(reconFilePath, referenceFilePath, hdrFileFlag, grayFlag, 
     pu21_psnr = pu21_metric(reconFile, referenceFile, 'PSNR');
     ret = pu21_psnr;
 end
+
 function ret = getHDRVDP3(reconFilePath, referenceFilePath, hdrFileFlag, Lpeak)
     if hdrFileFlag
         reconFile = hdrread(reconFilePath);
@@ -201,4 +203,10 @@ function ret = getHDRVDP3(reconFilePath, referenceFilePath, hdrFileFlag, Lpeak)
     L_refer = hdrvdp_gog_display_model(referFile, Lpeak, contrast, gamma, E_ambient);
     
     ret = hdrvdp3('quality', L_recon, L_refer, 'rgb-native', ppd).Q;
+end
+
+function Y = get_luminance( img )
+% Return 2D matrix of luminance values for 3D matrix with an RGB image
+
+    Y = img(:,:,1) * 0.212656 + img(:,:,2) * 0.715158 + img(:,:,3) * 0.072186;
 end

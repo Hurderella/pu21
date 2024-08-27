@@ -1,4 +1,4 @@
-function APPLY_METRIC(input)
+function APPLY_METRIC%(input)
     % referDir = "/Users/chan_company/Documents/CaveatSIhdr/reference/";
     % reconDir = "/Users/chan_company/Documents/CaveatSIhdr/reconstruction/";
     % pathSplit = "/";
@@ -20,8 +20,15 @@ function APPLY_METRIC(input)
     
     %NetworkList = ["singlehdr", "hdrcnn", "expandnet", "LFNet"];
     %NetworkList = ["TEST_RESULT/TEST_RESULT_2024_04_12__08_33_47_dummy"];
-    %NetworkList = ["TEST_RESULT/TEST_RESULT_2024_04_27__14_59_00"];
-    NetworkList = [string(input)];
+    %NetworkList = ["TEST_RESULT/TEST_RESULT_2024_05_17__18_40_30_512_color", ...
+    %    "TEST_RESULT/TEST_RESULT_2024_05_17__18_34_06_512_gray", ...
+    %    "TEST_RESULT/TEST_RESULT_2024_05_17__18_31_55_400_gray", ...
+    %    "TEST_RESULT/TEST_RESULT_2024_05_17__17_40_54_09_thres", ...
+    %    "TEST_RESULT/TEST_RESULT_2024_05_17__17_39_21_08_thres", ...
+    %    "TEST_RESULT/TEST_RESULT_2024_05_17__17_37_35_07_thres"];
+    NetworkList = ["TEST_RESULT/TEST_RESULT_2024_06_22__15_56_08", ...
+        "TEST_RESULT/TEST_RESULT_2024_06_22__15_50_42"];
+    %NetworkList = [string(input)];
     disp(NetworkList);
     disp("check")
         
@@ -51,8 +58,8 @@ function APPLY_METRIC(input)
                 'VariableNames',["Name", "PU21-PSNR", "PU21-PSNR-Y", "REF-PU21-PIQE", "REC-PU21-PIQE", "REF-PU21-BRISQUE", "REC-PU21-BRISQUE", "HDR-VDP-3"]);
             %for idx = 1:length(reconFolderInfo)
             reset(gpuDevice(1));
-            %parfor (idx = 1:length(reconFolderInfo), 12)
-            for idx = 1:length(reconFolderInfo)
+            parfor (idx = 1:length(reconFolderInfo), 12)
+            %for idx = 1:length(reconFolderInfo)
                 reconFileName = reconFolderInfo(idx).name;
                 reconFilePath = string(reconFolderInfo(idx).folder) + filesep + reconFileName;
     

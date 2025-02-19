@@ -1,14 +1,17 @@
 function ret = HDRVDP_GETTER %(inData, refData)
-    inpath = ['/Users/chan/Library/CloudStorage/GoogleDrive-hcs3759@gmail.com/내 ', ...
-        '드라이브/Colab ', ...;
-        'Notebooks/HDR_DATASET/CaveatsOfQA/reconstructions/LFNet/clip_97/001.hdr'];
+    inpath = "C:\\Users\\chan\\Documents\\github\\ICIP\\TEST_RESULT\\TEST_RESULT_2024_12_22__00_50_06\\TestDumpHdr_4_.hdr";
+    %['/Users/chan/Library/CloudStorage/GoogleDrive-hcs3759@gmail.com/내 ', ...
+     %   '드라이브/Colab ', ...;
+      %  'Notebooks/HDR_DATASET/CaveatsOfQA/reconstructions/LFNet/clip_97/001.hdr'];
     
-    referpath = ['/Users/chan/Library/CloudStorage/GoogleDrive-hcs3759@gmail.com/내 ', ...
-        '드라이브/Colab ', ...;
-        'Notebooks/HDR_DATASET/CaveatsOfQA/reference/001.exr'];
+    referpath = "C:\\Users\\chan\\Documents\\github\\ICIP\\TEST_RESULT\\TEST_RESULT_2024_12_22__00_50_06\\TestDumpHdr_ref_4_.hdr";
+    %['/Users/chan/Library/CloudStorage/GoogleDrive-hcs3759@gmail.com/내 ', ...
+     %   '드라이브/Colab ', ...;
+      %  'Notebooks/HDR_DATASET/CaveatsOfQA/reference/001.exr'];
 
     inData = hdrread(inpath);
-    refData = exrread(referpath);
+    refData = hdrread(referpath); 
+    %exrread(referpath);
 
     disp(inpath)
 

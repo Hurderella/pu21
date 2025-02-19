@@ -4,13 +4,13 @@ function APPLY_METRIC%(input)
     % pathSplit = "/";
     
     %%%%%%%%%%%% windows %%%%%%%%%%%
-    %tableSaveDst = "C:\Users\chan\Documents\github\ICIP\TEST_RESULT\";
-    %hdrBasePath = "C:\\Users\\chan\\Documents\\HDR_DATASET\\CaveatsOfQA\\sihdr" + filesep;
+    tableSaveDst = "C:\Users\chan\Documents\github\ICIP\TEST_RESULT\";
+    hdrBasePath = "C:\\Users\\chan\\Documents\\HDR_DATASET\\CaveatsOfQA\\";
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     %%%%%%%%%%%% Ubuntu %%%%%%%%%%%%
-    tableSaveDst = "/home/chan/Documents/github/ICIP/";
-    hdrBasePath = "/home/chan/Documents/HDR_DATASET/CaveatsOfQA/sihdr" + filesep;
+    % tableSaveDst = "/home/chan/Documents/github/ICIP/";
+    % hdrBasePath = "/home/chan/Documents/HDR_DATASET/CaveatsOfQA/sihdr" + filesep;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     reconPrefixPath = tableSaveDst;
@@ -26,8 +26,7 @@ function APPLY_METRIC%(input)
     %    "TEST_RESULT/TEST_RESULT_2024_05_17__17_40_54_09_thres", ...
     %    "TEST_RESULT/TEST_RESULT_2024_05_17__17_39_21_08_thres", ...
     %    "TEST_RESULT/TEST_RESULT_2024_05_17__17_37_35_07_thres"];
-    NetworkList = ["TEST_RESULT/TEST_RESULT_2024_06_22__15_56_08", ...
-        "TEST_RESULT/TEST_RESULT_2024_06_22__15_50_42"];
+    NetworkList = ["TEST_RESULT_2025_02_19__20_28_08"];
     %NetworkList = [string(input)];
     disp(NetworkList);
     disp("check")

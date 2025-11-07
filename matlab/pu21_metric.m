@@ -114,6 +114,15 @@ if ischar( metric )
         P_test = pu21.encode( L_test );
         P_reference = pu21.encode( L_reference );
 
+        % disp(max(P_test(:)));
+        % disp(max(P_reference(:)));
+
+        P_test = clamp(P_test, 0, 256.0);
+        P_reference = clamp(P_reference, 0, 256.0);
+
+        % disp(max(P_test(:)));
+        % disp(max(P_reference(:)));
+
         Q = MET.(metric).func(P_test,P_reference);
     else
         error( 'Unknown metric "%s"', metric );

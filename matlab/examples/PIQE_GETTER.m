@@ -1,4 +1,4 @@
-function ret = HDRVDP_GETTER 
+function ret = PIQE_GETTER 
     %inpath = "C:\\Users\\chan\\Documents\\github\\ICIP\\TEST_RESULT\\TEST_RESULT_2024_12_22__00_50_06\\TestDumpHdr_4_.hdr";
     % ['/Users/chan/Library/CloudStorage/GoogleDrive-hcs3759@gmail.com/내 ', ...
     %    '드라이브/Colab ', ...;
@@ -17,34 +17,8 @@ function ret = HDRVDP_GETTER
     % refData = exrread(referpath);
     basePath = "C:\\Users\\chan\\Documents\\github\\ICIP\\";
     load(basePath + "temp_recon.mat", "recon");
-    load(basePath + "temp_ref.mat", "refer");
     
     inData = recon;
-    refData = refer;
-    %disp(inpath)
-
-    
-    Lpeak = 500.0;
-    
-    contrast = 1000000;
-
-    gamma = 2.2;
-    E_ambient = 100;
-    ppd = hdrvdp_pix_per_deg( 24, [3840 2160], 0.8 );
-    
-    % m_inData = inData / max(inData(:)) * Lpeak;
-    % m_refData = refData / max(refData(:)) * Lpeak;
-    % m_inData = inData;
-    % m_refData = refData;
-    
-    % L_in = hdrvdp_gog_display_model(m_inData, Lpeak, contrast, gamma, E_ambient);
-    % 
-    % L_ref = hdrvdp_gog_display_model(m_refData, Lpeak, contrast, gamma, E_ambient);
-
-    % ret = hdrvdp3('quality', L_in, L_ref, 'rgb-native', ppd).Q;
-
-    % ret = hdrvdp3('quality', m_inData, m_refData, 'rgb-native', ppd).Q;
-    % ret = gather(ret);
 
     batchSize = size(inData, 1);
     tryCount = size(inData, 2);
@@ -53,14 +27,22 @@ function ret = HDRVDP_GETTER
     for k = 1:batchSize
         tryResult = zeros(1, tryCount);
         for y = 1:tryCount
+            
+            % result = hdrvdp3('quality', squeeze(m_inData(k, y, :, :, :)), squeeze(m_refData(k, :, :, :)), 'rgb-native', ppd, {'quiet', true}).Q;
+            % aa =squeeze(inData(k, y, :, :, :));
+            % ab = squeeze(inData(k, y, :, :, :));
+            % disp(ab(1, 1, 1));
+            % disp(ab(1, 1, 2));
+            % disp(ab(1, 1, 3));
+            % disp(max(ab, [], "all"));
+            imgData = clip(squeeze(inData(k, y, :, :, :)), 0, 255.0);
+            % imgData = squeeze(inData(k, y, :, :, :));
+            % disp(max(imgData, [], "all"));
+            % imgData = clip(squeeze(inData(k, y, :, :, :)), 0, 255.0);
+            % disp(max(imgData, [], "all"));
 
-            m_inData = squeeze(m_inData(k, y, :, :, :));
-            m_refData = squeeze(m_refData(k, :, :, :));
-
-            m_inData = m_inData / max(m_inData) * Lpeak;
-            m_refData = m_refData / max(m_refData) * Lpeak;
-            result = hdrvdp3('quality', m_inData, m_refData, 'rgb-native', ppd, {'quiet', true}).Q;
-
+            result = piqe(imgData);
+            
             result = gather(result);
             % disp(result)
             tryResult(y) = result;
@@ -68,4 +50,5 @@ function ret = HDRVDP_GETTER
         retlist { k } = tryResult;
     end
     ret = retlist;
+    disp(ret);
 end

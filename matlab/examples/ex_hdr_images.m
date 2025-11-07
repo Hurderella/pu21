@@ -12,7 +12,7 @@ L_peak = 4000; % Peak luminance of an HDR display
 % mapped to absolute amount of light emitted from the display. For that, 
 % we map the peak value in the image to the peak value of the display:
 I_ref = I_ref/max(I_ref(:)) * L_peak;
-
+disp(max(I_ref(:)));
 % Add Gaussian noise of 20% contrast. Make sure all values are greater than
 % 0.05.
 I_test_noise = max( I_ref + I_ref.*randn(size(I_ref))*0.2, 0.05 );

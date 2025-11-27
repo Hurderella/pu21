@@ -31,16 +31,10 @@ function ret = PIQE_GETTER
             % result = hdrvdp3('quality', squeeze(m_inData(k, y, :, :, :)), squeeze(m_refData(k, :, :, :)), 'rgb-native', ppd, {'quiet', true}).Q;
             % aa =squeeze(inData(k, y, :, :, :));
             % ab = squeeze(inData(k, y, :, :, :));
-            % disp(ab(1, 1, 1));
-            % disp(ab(1, 1, 2));
-            % disp(ab(1, 1, 3));
-            % disp(max(ab, [], "all"));
-            imgData = clip(squeeze(inData(k, y, :, :, :)), 0, 255.0);
-            % imgData = squeeze(inData(k, y, :, :, :));
-            % disp(max(imgData, [], "all"));
+            
             % imgData = clip(squeeze(inData(k, y, :, :, :)), 0, 255.0);
-            % disp(max(imgData, [], "all"));
-
+            imgData = squeeze(inData(k, y, :, :, :));
+            
             result = piqe(imgData);
             
             result = gather(result);

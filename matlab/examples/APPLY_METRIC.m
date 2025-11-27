@@ -18,7 +18,13 @@ function APPLY_METRIC%(input)
     referencePath = hdrBasePath + "reference" + filesep;
     
     refExt = ".exr";
-    NetworkList = ["singlehdr", "hdrcnn", "expandnet", "LFNet", ];
+    NetworkList = ["singlehdr", "hdrcnn", "expandnet", "LFNet", ...
+        "TEST_RESULT_2025_11_26__23_43_34", ... 
+        "TEST_RESULT_2025_11_27__00_02_26", ... 
+        "TEST_RESULT_2025_11_27__00_16_33", ... 
+        "TEST_RESULT_2025_11_27__00_38_27", ... 
+        "TEST_RESULT_2025_11_27__00_48_17", ... 
+        "TEST_RESULT_2025_11_27__01_05_09"];
     % NetworkList = ["singlehdr", "hdrcnn", "expandnet", "LFNet", "LFNet_output"];
     %NetworkList = ["TEST_RESULT/TEST_RESULT_2024_04_12__08_33_47_dummy"];
     %NetworkList = ["TEST_RESULT/TEST_RESULT_2024_05_17__18_40_30_512_color", ...
@@ -29,7 +35,16 @@ function APPLY_METRIC%(input)
     %    "TEST_RESULT/TEST_RESULT_2024_05_17__17_37_35_07_thres"];
     
     % NetworkList =["psnr_test"];
-    % NetworkList = ["TEST_RESULT_2025_11_07__10_31_26"];
+    
+    % CRITIC-FREE
+    % NetworkList = ["TEST_RESULT_2025_11_26__23_43_34"]; % BRISQUE
+    % NetworkList = ["TEST_RESULT_2025_11_27__00_02_26"]; % PIQE
+    % NetworkList = ["TEST_RESULT_2025_11_27__00_16_33"]; % hdr-vdp-3
+    % ----------------------------------------------------------------
+    % CRITIC-FREE-FALSE
+    % NetworkList = ["TEST_RESULT_2025_11_27__00_38_27"]; % BRISQUE
+    % NetworkList = ["TEST_RESULT_2025_11_27__00_48_17"]; % PIQE
+    % NetworkList = ["TEST_RESULT_2025_11_27__01_05_09"]; % hdr-vdp-3
     %NetworkList = [string(input)];
     disp(NetworkList);
     disp("check")
@@ -147,7 +162,8 @@ function ret = getBRISQUE_PIQE(reconFilePath, referenceFilePath, hdrFileFlag, Lp
     % Normalize
     reconFile_pu21 = get_luminance(reconFile_pu21);
     referFile_pu21 = get_luminance(referFile_pu21);
-  
+
+
     % Normalize
     % for k = 1:3
     %     data = reconFile_pu21(:, :, k);
